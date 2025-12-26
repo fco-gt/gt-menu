@@ -6,3 +6,46 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Tenant {
+  id    String @id @default(cuid())
+  name  String
+  slug  String @unique
+  menus Menu[]
+}
+
+model Menu {
+  id        String        @id @default(cuid())
+  tenant    Tenant        @relation(fields: [tenantId], references: [id])
+  tenantId  String
+  publicId  String        @unique // apunta el QR
+  versions  MenuVersion[]
+  createdAt DateTime      @default(now())
+}
+
+model MenuVersion {
+  id        String   @id @default(cuid())
+  menu      Menu     @relation(fields: [menuId], references: [id])
+  menuId    String
+  name      String
+  createdAt DateTime @default(now())
+  published Boolean  @default(false)
+  items     Item[]
+}
+
+model Item {
+  id          String      @id @default(cuid())
+  version     MenuVersion @relation(fields: [versionId], references: [id])
+  versionId   String
+  title       String
+  description String?
+  priceCents  Int
+  order       Int
+  state       ItemState   @default(ACTIVE)
+}
+
+enum ItemState {
+  ACTIVE
+  OUT_OF_STOCK
+  HIDDEN
+}
