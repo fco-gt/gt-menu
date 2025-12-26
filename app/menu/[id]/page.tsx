@@ -1,7 +1,8 @@
 import { MenuItem } from "@/types";
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/public/menu/${params.id}`,
     {

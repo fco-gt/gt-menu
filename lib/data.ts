@@ -3,7 +3,7 @@ import { cache } from "react";
 
 export const getMenuByPublicId = cache(async (publicId: string) => {
   const menu = await prisma.menu.findUnique({
-    where: { publicId },
+    where: { publicId: publicId },
     include: {
       versions: {
         where: { published: true },
@@ -13,6 +13,8 @@ export const getMenuByPublicId = cache(async (publicId: string) => {
       },
     },
   });
+
+  console.log();
 
   if (!menu) return null;
 
