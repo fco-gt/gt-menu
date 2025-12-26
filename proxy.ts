@@ -2,15 +2,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { logger } from "./lib/logger";
 
-// Simple in-memory rate limiter (Note: In serverless/production, use Redis/Upstash)
 const rateLimitMap = new Map();
 
-export function middleware(request: NextRequest) {
-  // Only apply to public API routes
+export function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api/public")) {
     const ip = request.headers.get("x-forwarded-for") || "unknown";
-    const limit = 100; // Limit to 100 requests
-    const windowMs = 60 * 1000; // per 1 minute
+    const limit = 100;
+    const windowMs = 60 * 1000;
 
     if (!rateLimitMap.has(ip)) {
       rateLimitMap.set(ip, {
