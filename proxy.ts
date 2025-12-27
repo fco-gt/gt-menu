@@ -1,15 +1,21 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { logger } from "./lib/logger";
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const rateLimitMap = new Map();
 
-export default clerkMiddleware();
+const isProtectedRoute = createRouteMatcher(["/dashboard(.*)", "/onboarding"]);
 
-export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/api/public")) {
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
+export default clerkMiddleware(async (auth, req: NextRequest) => {
+  // Protect routes that require authentication
+  if (isProtectedRoute(req)) {
+    await auth.protect();
+  }
+
+  // Rate limiting for public API routes
+  if (req.nextUrl.pathname.startsWith("/api/public")) {
+    const ip = req.headers.get("x-forwarded-for") || "unknown";
     const limit = 100; // Limit to 100 requests
     const windowMs = 60 * 1000; // per 1 minute
 
@@ -30,7 +36,7 @@ export function proxy(request: NextRequest) {
     if (ipData.count >= limit) {
       logger.warn("Rate limit exceeded", {
         ip,
-        path: request.nextUrl.pathname,
+        path: req.nextUrl.pathname,
       });
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
@@ -39,7 +45,7 @@ export function proxy(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [
