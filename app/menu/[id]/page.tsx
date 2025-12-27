@@ -1,5 +1,25 @@
 import { MenuItem } from "@/types";
+import { Metadata } from "next";
+
 type Props = { params: Promise<{ id: string }> };
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/public/menu/${params.id}`,
+      { next: { revalidate: 60 } }
+    );
+    if (!res.ok) return { title: "Menu Not Found" };
+    const data = await res.json();
+    return {
+      title: `${data.version.name} - Menu`,
+      description: `View the menu for ${data.version.name}`,
+    };
+  } catch (e) {
+    return { title: "Menu" };
+  }
+}
 
 export default async function Page(props: Props) {
   const params = await props.params;
