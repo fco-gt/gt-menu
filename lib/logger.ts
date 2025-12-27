@@ -1,34 +1,17 @@
-export const logger = {
-  info: (message: string, meta?: Record<string, unknown>) => {
-    console.log(
-      JSON.stringify({
-        level: "info",
-        message,
-        timestamp: new Date().toISOString(),
-        ...meta,
-      })
-    );
+export interface Logger {
+  info(message: string, ...args: unknown[]): void;
+  warn(message: string, ...args: unknown[]): void;
+  error(message: string, ...args: unknown[]): void;
+}
+
+export const logger: Logger = {
+  info: (message, ...args) => {
+    console.log(`[INFO] ${message}`, ...args);
   },
-  error: (message: string, error?: unknown, meta?: Record<string, unknown>) => {
-    console.error(
-      JSON.stringify({
-        level: "error",
-        message,
-        error: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined,
-        timestamp: new Date().toISOString(),
-        ...meta,
-      })
-    );
+  warn: (message, ...args) => {
+    console.warn(`[WARN] ${message}`, ...args);
   },
-  warn: (message: string, meta?: Record<string, unknown>) => {
-    console.warn(
-      JSON.stringify({
-        level: "warn",
-        message,
-        timestamp: new Date().toISOString(),
-        ...meta,
-      })
-    );
+  error: (message, ...args) => {
+    console.error(`[ERROR] ${message}`, ...args);
   },
 };

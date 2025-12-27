@@ -7,8 +7,8 @@ const rateLimitMap = new Map();
 export function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api/public")) {
     const ip = request.headers.get("x-forwarded-for") || "unknown";
-    const limit = 100;
-    const windowMs = 60 * 1000;
+    const limit = 100; // Limit to 100 requests
+    const windowMs = 60 * 1000; // per 1 minute
 
     if (!rateLimitMap.has(ip)) {
       rateLimitMap.set(ip, {
