@@ -1,6 +1,10 @@
 import prisma from "@/lib/prisma";
 import { cache } from "react";
-
+/**
+ *  Get menu by public ID
+ * @param publicId
+ * @returns
+ */
 export const getMenuByPublicId = cache(async (publicId: string) => {
   const menu = await prisma.menu.findUnique({
     where: { publicId: publicId },
