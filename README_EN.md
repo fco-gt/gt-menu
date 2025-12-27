@@ -129,7 +129,7 @@ fetch(url, {
 - `stale-while-revalidate=300`: Serve stale cache while updating in background
 - **Benefit:** Instant TTFB from edge locations
 
-#### Flow Diagram
+#### Flow Diagram (mermaid)
 
 ```mermaid
 sequenceDiagram
