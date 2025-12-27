@@ -17,21 +17,37 @@ const bodySchema = z.object({
   ),
 });
 
+import { auth } from "@clerk/nextjs/server";
+
 export async function POST(req: Request) {
   try {
-    const apiKey = req.headers.get("x-api-key");
-    if (apiKey !== process.env.ADMIN_API_KEY)
+    const { userId } = await auth();
+    if (!userId)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const json = await req.json();
     const { tenantSlug, name, items } = bodySchema.parse(json);
 
-    const tenant = await prisma.tenant.findUnique({
-      where: { slug: tenantSlug },
+    // Verify tenant exists and user is a member
+    const tenant = await prisma.tenant.findFirst({
+      where: {
+        slug: tenantSlug,
+        members: {
+          some: {
+            clerkUserId: userId,
+          },
+        },
+      },
+      include: {
+        members: true,
+      },
     });
 
     if (!tenant)
-      return NextResponse.json({ error: "Tenant not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Tenant not found or you don't have access" },
+        { status: 404 }
+      );
 
     const formattedItems = items.map((item) => ({
       ...item,

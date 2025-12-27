@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { logger } from "./lib/logger";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
 const rateLimitMap = new Map();
+
+export default clerkMiddleware();
 
 export function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api/public")) {
@@ -39,5 +42,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/api/public/:path*",
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+    "/api/public/:path*",
+  ],
 };

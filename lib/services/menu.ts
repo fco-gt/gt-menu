@@ -14,7 +14,7 @@ export async function createMenu({
   const menu = await prisma.menu.create({
     data: {
       tenantId,
-      publicId: `m_${nanoid(10)}`, // Short ID with prefix for readability
+      publicId: `m_${nanoid(10)}`,
       versions: { create: { name, published: true, items: { create: items } } },
     },
     include: { versions: true },

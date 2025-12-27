@@ -14,8 +14,6 @@ export const getMenuByPublicId = cache(async (publicId: string) => {
     },
   });
 
-  console.log();
-
   if (!menu) return null;
 
   return {

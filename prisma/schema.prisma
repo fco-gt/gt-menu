@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../app/generated/prisma"
 }
 
@@ -8,19 +8,41 @@ datasource db {
 }
 
 model Tenant {
-  id    String @id @default(cuid())
-  name  String
-  slug  String @unique
-  menus Menu[]
+  id        String       @id @default(cuid())
+  name      String
+  slug      String       @unique
+  menus     Menu[]
+  members   Membership[]
+  createdAt DateTime     @default(now())
+}
+
+model Membership {
+  id          String   @id @default(cuid())
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId    String
+  clerkUserId String
+  role        Role     @default(EDITOR)
+  createdAt   DateTime @default(now())
+
+  @@unique([tenantId, clerkUserId])
+  @@index([clerkUserId])
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  EDITOR
 }
 
 model Menu {
   id        String        @id @default(cuid())
   tenant    Tenant        @relation(fields: [tenantId], references: [id])
   tenantId  String
-  publicId  String        @unique // apunta el QR
+  publicId  String        @unique
   versions  MenuVersion[]
   createdAt DateTime      @default(now())
+
+  @@index([tenantId])
 }
 
 model MenuVersion {
@@ -28,9 +50,11 @@ model MenuVersion {
   menu      Menu     @relation(fields: [menuId], references: [id])
   menuId    String
   name      String
-  createdAt DateTime @default(now())
   published Boolean  @default(false)
   items     Item[]
+  createdAt DateTime @default(now())
+
+  @@index([menuId, published])
 }
 
 model Item {
@@ -42,6 +66,8 @@ model Item {
   priceCents  Int
   order       Int
   state       ItemState   @default(ACTIVE)
+
+  @@index([versionId, state])
 }
 
 enum ItemState {
