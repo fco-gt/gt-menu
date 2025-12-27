@@ -300,3 +300,23 @@ Este proyecto es privado. Todos los derechos reservados.
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [Clerk Authentication](https://clerk.com/docs)
 - [Vercel Deployment](https://vercel.com/docs)
+
+## Licencia
+
+Este proyecto está **disponible** y está destinado al aprendizaje y al uso en portafolios.
+
+✔ Permitido:
+
+- Proyectos personales
+- Portafolios
+- Uso educativo
+- Solicitudes de extracción y contribuciones
+
+✘ No permitido:
+
+- Uso comercial
+- Productos SaaS
+- Trabajo remunerado de clientes
+- Venta o monetización de este código
+
+Licencia: **CC BY-NC 4.0**
